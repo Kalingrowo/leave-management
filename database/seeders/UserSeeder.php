@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
 
         $user1 = new User();
         $user1->name = 'Admin';
-        $user1->email = 'admin@arsoft.co-id';
+        $user1->email = 'admin@arsoft.co.id';
         $user1->password = Hash::make('123456');
         $user1->save();
         $user1->roles()->attach($admin);
