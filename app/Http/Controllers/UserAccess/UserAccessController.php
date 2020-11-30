@@ -72,7 +72,7 @@ class UserAccessController extends Controller
 
             DB::commit();
             return response()->json([
-                'target_user' => $targetUser
+                'data' => $targetUser
             ], 200);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -103,7 +103,7 @@ class UserAccessController extends Controller
 
             DB::commit();
             return response()->json([
-                'target_user' => $targetUser
+                'data' => $targetUser
             ], 200);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -118,7 +118,7 @@ class UserAccessController extends Controller
         DB::beginTransaction();
         try {
             if (Permission::where('slug', $request->slug)->exists()) {
-                throw new Exception("Nama 'permission' sudah digunakan, gunakan nama yang lain !", 400);
+                throw new \Exception("Nama 'permission' sudah digunakan, gunakan nama yang lain !", 400);
             }
 
             $data = new Permission();
@@ -126,8 +126,12 @@ class UserAccessController extends Controller
             $data->slug = $request->slug;
             $data->save();
 
+            $allPermissions = $this->getAllPermissions();
+            $allPermissions = $allPermissions->original['data'];
+
             DB::commit();
             return response()->json([
+                'data' => $allPermissions
             ], 200);
         } catch (\Throwable $th) {
             DB::rollBack();
