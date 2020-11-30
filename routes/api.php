@@ -34,5 +34,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('get-all-permissions', [UserAccessController::class, 'getAllPermissions'])->name('get_all_permissions');
         Route::get('get-all-roles', [UserAccessController::class, 'getAllRoles'])->name('get_all_roles');
         Route::get('get-role-detail/{id}', [UserAccessController::class, 'getRoleDetail'])->name('get_role_detail');
+        Route::post('assign-permissions-to-user', [UserAccessController::class, 'assignPermissionsToUser'])->name('assign_permissions_to_user');
     });
 });
