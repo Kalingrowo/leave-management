@@ -13,4 +13,18 @@ class Role extends Model
     {
         return $this->belongsToMany(Permission::class, 'permission_role');
     }
+
+    /**
+     * functions
+     * */
+    public static function getAllRoles()
+    {
+        return self::get();
+    }
+    public static function getRoleDetail($id)
+    {
+        return self::where('id', $id)
+            ->with('permissions')
+            ->first();
+    }
 }

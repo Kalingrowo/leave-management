@@ -17,7 +17,7 @@ class UserAccessController extends Controller
      */
     public function getAllPermissions()
     {
-        $getPersmissions = Permission::get();
+        $getPersmissions = Permission::getAllPermissions();
 
         return response()->json([
             'data' => $getPersmissions
@@ -29,10 +29,10 @@ class UserAccessController extends Controller
      */
     public function getAllRoles()
     {
-        $getPersmissions = Role::get();
+        $getRoles = Role::getAllRoles();
 
         return response()->json([
-            'data' => $getPersmissions
+            'data' => $getRoles
         ], 200);
     }
 
@@ -42,9 +42,7 @@ class UserAccessController extends Controller
      */
     public function getRoleDetail($roleId)
     {
-        $roleDetail = Role::where('id', $roleId)
-            ->with('permissions')
-            ->first();
+        $roleDetail = Role::getRoleDetail($roleId);
 
         return response()->json([
             'data' => $roleDetail
