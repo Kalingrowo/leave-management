@@ -76,17 +76,17 @@ trait HasRolesAndPermissions
     }
 
     /**
-     * @param mixed ...#permissions
+     * @param mixed ...$permissions
      * @return $this
      */
-    public function givePermissionsTo(... $permissions)
+    public function givePermissionsTo(array $permissions)
     {
         $permissions = $this->getAllPermissions($permissions);
         if ($permissions === null) {
             return $this;
         }
 
-        $this->permissions()->saveMany($permissions);;
+        $this->permissions()->syncWithoutDetaching($permissions);;
         return $this;
     }
 
