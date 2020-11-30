@@ -36,5 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('get-role-detail/{id}', [UserAccessController::class, 'getRoleDetail'])->name('get_role_detail');
         Route::post('assign-permissions-to-user', [UserAccessController::class, 'assignPermissionsToUser'])->name('assign_permissions_to_user');
         Route::post('revoke-permissions-from-user', [UserAccessController::class, 'revokePermissionsFromUser'])->name('revoke_permissions_from_user');
+
+        Route::post('store-permission', [UserAccessController::class, 'storePermission'])->name('store_permission');
     });
 });

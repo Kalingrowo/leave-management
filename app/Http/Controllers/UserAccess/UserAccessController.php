@@ -111,4 +111,28 @@ class UserAccessController extends Controller
         }
     }
 
+    public function storePermission(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            if (Permission::where('slug', $request->slug)->exists()) {
+                throw new Exception("Nama 'permission' sudah digunakan, gunakan nama yang lain !", 400);
+            }
+
+            $data = new Permission();
+            $data->name = $request->name;
+            $data->slug = $request->slug;
+            $data->save();
+
+            DB::commit();
+            return response()->json([
+            ], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
 }
