@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasRolesAndPermissions;
+use Crypt;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -30,6 +31,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
+        'id',
         'password',
         'remember_token',
     ];
@@ -42,4 +44,21 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['encrypted_id'];
+
+    /**
+     * Get the encrypted_id for the user.
+     *
+     * @return bool
+     */
+    public function getEncryptedIdAttribute()
+    {
+        return Crypt::encrypt($this->attributes['id']);
+    }
 }
