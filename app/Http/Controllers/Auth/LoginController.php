@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
+use Auth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 
@@ -50,22 +51,6 @@ class LoginController extends Controller
     }
 
     /**
-     * Validate the user login request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return void
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    protected function validateLogin(Request $request)
-    {
-        $request->validate([
-            $this->username() => 'required|string',
-            'password' => 'required|string',
-        ]);
-    }
-
-    /**
      * Handle a login request to the application.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -88,6 +73,10 @@ class LoginController extends Controller
         }
 
         if ($this->attemptLogin($request)) {
+            $userToken = $request->user()->createToken('ARSoft');
+            $userToken = $userToken->plainTextToken;
+            $request->user()->withAccessToken($userToken);
+            
             return $this->sendLoginResponse($request);
         }
 
@@ -100,6 +89,25 @@ class LoginController extends Controller
     }
 
     /**
+     * Send the response after the user was authenticated.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
+    protected function sendLoginResponse(Request $request)
+    {
+        $this->clearLoginAttempts($request);
+
+        if ($response = $this->authenticated($request, $this->guard()->user())) {
+            return $response;
+        }
+
+        return response()->json([
+            'token' => $request->user()->currentAccessToken()
+        ], 200);
+    }
+
+    /**
      * Log the user out of the application.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -107,19 +115,16 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
-        $this->guard()->logout();
-
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
-
+        $user = $request->user();
+        
+        // revoke token
+        $user->tokens()->where('id', $user->currentAccessToken()->id)->delete();
+        
         if ($response = $this->loggedOut($request)) {
             return $response;
         }
 
-        return $request->wantsJson()
-            ? new JsonResponse([], 204)
-            : redirect('/');
+        return response()->json([], 204);
     }
 
 }
