@@ -141,7 +141,7 @@ class UserAccessController extends Controller
 
             DB::commit();
             return response()->json([
-                'data' => $targetUser->permissions
+                'data' => $targetUser
             ], 200);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -296,6 +296,39 @@ class UserAccessController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * @param Illuminate\Http\Request $request
+     * @return json
+     * used to sync permissions ( detach all permission then attach new permissions )
+     */
+    public function refreshRolePermissions(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $listPermissions = $request->permissions;
+            $role = $request->role_id;
+            $role = Role::where('id', $role)->first();
+
+            if (is_null($role)) {
+                throw new Exception("Data tidak ditemukan !", 404);
+            }
+
+            $role->refreshPermissions($listPermissions);
+            $role->refresh();
+
+            DB::commit();
+            return response()->json([
+                'data' => $role
+            ], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
     /**
      * @param Illuminate\Http\Request $request
      * @return json

@@ -49,4 +49,14 @@ class Role extends Model
         return $this;
     }
 
+    /**
+     * @param array $permissions
+     * @return HasRolesAndPermissions
+     */
+    public function refreshPermissions(array $permissions)
+    {
+        $this->permissions()->detach();
+        return $this->givePermissionsTo($permissions);
+    }
+
 }
