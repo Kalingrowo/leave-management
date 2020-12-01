@@ -76,7 +76,7 @@ trait HasRolesAndPermissions
     }
 
     /**
-     * @param mixed ...$permissions
+     * @param array $permissions
      * @return $this
      */
     public function givePermissionsTo(array $permissions)
@@ -110,4 +110,29 @@ trait HasRolesAndPermissions
         $this->permissions()->detach();
         return $this->givePermissionsTo($permissions);
     }
+
+    /**
+     * @param array $roles
+     * @return mixed
+     */
+    protected function getAllRoles(array $roles)
+    {
+        return Role::whereIn('slug', $roles)->get();
+    }
+
+    /**
+     * @param array $roles
+     * @return $this
+     */
+    public function giveRolesTo(array $roles)
+    {
+        $roles = $this->getAllRoles($roles);
+        if ($roles === null) {
+            return $this;
+        }
+
+        $this->roles()->syncWithoutDetaching($roles);;
+        return $this;
+    }
+
 }

@@ -203,6 +203,37 @@ class UserAccessController extends Controller
     }
 
     /**
+     * @param Illuminate\Http\Request $request
+     * @return json
+     */
+    public function assignRolesToUser(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $listRoles = $request->roles;
+            $targetUser = Crypt::decrypt($request->user_id);
+            $targetUser = User::where('id', $targetUser)->first();
+
+            if (is_null($targetUser)) {
+                throw new Exception("Data tidak ditemukan !", 404);
+            }
+
+            $targetUser->giveRolesTo($listRoles);
+            $targetUser->refresh();
+
+            DB::commit();
+            return response()->json([
+                'data' => $targetUser
+            ], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * @param int $permissionId
      * @return json
      */
