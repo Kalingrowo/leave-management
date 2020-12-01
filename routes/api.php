@@ -40,5 +40,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('get-all-roles', [UserAccessController::class, 'getAllRoles'])->name('get_all_roles');
         Route::get('get-role-detail/{id}', [UserAccessController::class, 'getRoleDetail'])->name('get_role_detail');
         Route::post('store-role', [UserAccessController::class, 'storeRole'])->name('store_role');
+        Route::delete('delete-role/{id}', [UserAccessController::class, 'deleteRole'])->name('delete_role');
     });
 });

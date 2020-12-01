@@ -201,4 +201,29 @@ class UserAccessController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * @param int $permissionId
+     * @return json
+     */
+    public function deleteRole($roleId)
+    {
+        DB::beginTransaction();
+        try {
+            Role::where('id', $roleId)->delete();
+
+            $allRoles = $this->getAllRoles();
+            $allRoles = $allRoles->original['data'];
+
+            DB::commit();
+            return response()->json([
+                'data' => $allRoles
+            ], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
 }
