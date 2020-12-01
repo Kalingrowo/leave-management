@@ -38,5 +38,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('revoke-permissions-from-user', [UserAccessController::class, 'revokePermissionsFromUser'])->name('revoke_permissions_from_user');
 
         Route::post('store-permission', [UserAccessController::class, 'storePermission'])->name('store_permission');
+        Route::delete('delete-permission/{id}', [UserAccessController::class, 'deletePermission'])->name('delete_permission');
     });
 });

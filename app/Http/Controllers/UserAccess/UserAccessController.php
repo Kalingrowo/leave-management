@@ -52,7 +52,7 @@ class UserAccessController extends Controller
     }
 
     /**
-     * @param int encrypted_user_id
+     * @param Illuminate\Http\Request $request
      * @return json
      */
     public function assignPermissionsToUser(Request $request)
@@ -83,7 +83,7 @@ class UserAccessController extends Controller
     }
 
     /**
-     * @param int encrypted_user_id
+     * @param Illuminate\Http\Request $request
      * @return json
      */
     public function revokePermissionsFromUser(Request $request)
@@ -98,7 +98,7 @@ class UserAccessController extends Controller
                 throw new Exception("Data tidak ditemukan !", 404);
             }
 
-            $targetUser->deletePermissions($listPermissions);
+            $targetUser->revokePermissions($listPermissions);
             $targetUser->refresh();
 
             DB::commit();
@@ -113,6 +113,10 @@ class UserAccessController extends Controller
         }
     }
 
+    /**
+     * @param Illuminate\Http\Request $request
+     * @return json
+     */
     public function storePermission(Request $request)
     {
         DB::beginTransaction();
@@ -125,6 +129,31 @@ class UserAccessController extends Controller
             $data->name = $request->name;
             $data->slug = $request->slug;
             $data->save();
+
+            $allPermissions = $this->getAllPermissions();
+            $allPermissions = $allPermissions->original['data'];
+
+            DB::commit();
+            return response()->json([
+                'data' => $allPermissions
+            ], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * @param int $permissionId
+     * @return json
+     */
+    public function deletePermission($permissionId)
+    {
+        DB::beginTransaction();
+        try {
+            Permission::where('id', $permissionId)->delete();
 
             $allPermissions = $this->getAllPermissions();
             $allPermissions = $allPermissions->original['data'];

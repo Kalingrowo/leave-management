@@ -94,7 +94,7 @@ trait HasRolesAndPermissions
      * @param mixed ...$permissions
      * @return $this
      */
-    public function deletePermissions(array $permissions)
+    public function revokePermissions(array $permissions)
     {
         $permissions = $this->getAllPermissions($permissions);
         $this->permissions()->detach($permissions);
