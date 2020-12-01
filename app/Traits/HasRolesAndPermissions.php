@@ -146,4 +146,14 @@ trait HasRolesAndPermissions
         return $this;
     }
 
+    /**
+     * @param array $roles
+     * @return HasRolesAndPermissions
+     */
+    public function refreshRoles(array $roles)
+    {
+        $this->roles()->detach();
+        return $this->giveRolesTo($roles);
+    }
+
 }
