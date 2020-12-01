@@ -234,6 +234,38 @@ class UserAccessController extends Controller
         }
     }
 
+
+    /**
+     * @param Illuminate\Http\Request $request
+     * @return json
+     */
+    public function assignPermissionsToRole(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $listPermissions = $request->permissions;
+            $role = $request->role_id;
+            $role = Role::where('id', $role)->first();
+
+            if (is_null($role)) {
+                throw new Exception("Data tidak ditemukan !", 404);
+            }
+
+            $role->givePermissionsTo($listPermissions);
+            $role->refresh();
+
+            DB::commit();
+            return response()->json([
+                'data' => $role
+            ], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
     /**
      * @param Illuminate\Http\Request $request
      * @return json

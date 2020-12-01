@@ -13,4 +13,29 @@ class Role extends Model
     {
         return $this->belongsToMany(Permission::class, 'permission_role');
     }
+
+    /**
+     * @param array $permission
+     * @return mixed
+     */
+    protected function getAllPermissions(array $permissions)
+    {
+        return Permission::whereIn('slug', $permissions)->get();
+    }
+
+    /**
+     * @param array $permissions
+     * @return $this
+     */
+    public function givePermissionsTo(array $permissions)
+    {
+        $permissions = $this->getAllPermissions($permissions);
+        if ($permissions === null) {
+            return $this;
+        }
+
+        $this->permissions()->syncWithoutDetaching($permissions);;
+        return $this;
+    }
+
 }

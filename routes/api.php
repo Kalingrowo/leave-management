@@ -41,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('get-all-roles', [UserAccessController::class, 'getAllRoles'])->name('get_all_roles');
         Route::get('get-role-detail/{id}', [UserAccessController::class, 'getRoleDetail'])->name('get_role_detail');
         Route::post('store-role', [UserAccessController::class, 'storeRole'])->name('store_role');
+        Route::post('assign-permissions-to-role', [UserAccessController::class, 'assignPermissionsToRole'])->name('assign_permissions_to_role');
         Route::post('assign-roles-to-user', [UserAccessController::class, 'assignRolesToUser'])->name('assign_roles_to_user');
         Route::post('revoke-roles-from-user', [UserAccessController::class, 'revokeRolesFromUser'])->name('revoke_roles_from_user');
         Route::post('refresh-user-roles', [UserAccessController::class, 'refreshUserRoles'])->name('refresh_user_roles');
