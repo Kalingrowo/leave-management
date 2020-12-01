@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\User;
 use Crypt;
 use DB;
+use Exception;
 use Illuminate\Http\Request;
 
 class UserAccessController extends Controller
@@ -33,7 +34,7 @@ class UserAccessController extends Controller
         DB::beginTransaction();
         try {
             if (Permission::where('slug', $request->slug)->exists()) {
-                throw new \Exception("Nama permission '" . $request->name . "' sudah digunakan, gunakan nama yang lain !", 400);
+                throw new Exception("Nama permission '" . $request->name . "' sudah digunakan, gunakan nama yang lain !", 400);
             }
 
             $data = new Permission();
@@ -211,7 +212,7 @@ class UserAccessController extends Controller
         DB::beginTransaction();
         try {
             if (Role::where('slug', $request->slug)->exists()) {
-                throw new \Exception("Nama role '" . $request->name . "' sudah digunakan, gunakan nama yang lain !", 400);
+                throw new Exception("Nama role '" . $request->name . "' sudah digunakan, gunakan nama yang lain !", 400);
             }
 
             $data = new Role();
@@ -233,7 +234,6 @@ class UserAccessController extends Controller
             ], 500);
         }
     }
-
 
     /**
      * @param Illuminate\Http\Request $request
@@ -266,6 +266,36 @@ class UserAccessController extends Controller
         }
     }
 
+    /**
+     * @param Illuminate\Http\Request $request
+     * @return json
+     */
+    public function revokePermissionsFromRole(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $listPermissions = $request->permissions;
+            $role = $request->role_id;
+            $role = Role::where('id', $role)->first();
+
+            if (is_null($role)) {
+                throw new Exception("Data tidak ditemukan !", 404);
+            }
+
+            $role->revokePermissions($listPermissions);
+            $role->refresh();
+
+            DB::commit();
+            return response()->json([
+                'data' => $role
+            ], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
     /**
      * @param Illuminate\Http\Request $request
      * @return json

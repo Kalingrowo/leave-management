@@ -38,4 +38,15 @@ class Role extends Model
         return $this;
     }
 
+    /**
+     * @param array $permissions
+     * @return $this
+     */
+    public function revokePermissions(array $permissions)
+    {
+        $permissions = $this->getAllPermissions($permissions);
+        $this->permissions()->detach($permissions);
+        return $this;
+    }
+
 }
