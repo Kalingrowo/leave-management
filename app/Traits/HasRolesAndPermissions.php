@@ -102,10 +102,10 @@ trait HasRolesAndPermissions
     }
 
     /**
-     * @param mixed ...$permissions
+     * @param array $permissions
      * @return HasRolesAndPermissions
      */
-    public function refreshPermissions(... $permissions)
+    public function refreshPermissions(array $permissions)
     {
         $this->permissions()->detach();
         return $this->givePermissionsTo($permissions);

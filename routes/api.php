@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('store-permission', [UserAccessController::class, 'storePermission'])->name('store_permission');
         Route::post('assign-permissions-to-user', [UserAccessController::class, 'assignPermissionsToUser'])->name('assign_permissions_to_user');
         Route::post('revoke-permissions-from-user', [UserAccessController::class, 'revokePermissionsFromUser'])->name('revoke_permissions_from_user');
+        Route::post('refresh-user-permissions', [UserAccessController::class, 'refreshUserPermissions'])->name('refresh_user_permissions');
         Route::delete('delete-permission/{id}', [UserAccessController::class, 'deletePermission'])->name('delete_permission');
 
         Route::get('get-all-roles', [UserAccessController::class, 'getAllRoles'])->name('get_all_roles');
