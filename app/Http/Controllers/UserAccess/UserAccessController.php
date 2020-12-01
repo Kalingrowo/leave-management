@@ -25,30 +25,35 @@ class UserAccessController extends Controller
     }
 
     /**
+     * @param Illuminate\Http\Request $request
      * @return json
      */
-    public function getAllRoles()
+    public function storePermission(Request $request)
     {
-        $getPersmissions = Role::get();
+        DB::beginTransaction();
+        try {
+            if (Permission::where('slug', $request->slug)->exists()) {
+                throw new \Exception("Nama permission '" . $request->name . "' sudah digunakan, gunakan nama yang lain !", 400);
+            }
 
-        return response()->json([
-            'data' => $getPersmissions
-        ], 200);
-    }
+            $data = new Permission();
+            $data->name = $request->name;
+            $data->slug = $request->slug;
+            $data->save();
 
-    /**
-     * @param int role_id
-     * @return json
-     */
-    public function getRoleDetail($roleId)
-    {
-        $roleDetail = Role::where('id', $roleId)
-            ->with('permissions')
-            ->first();
+            $allPermissions = $this->getAllPermissions();
+            $allPermissions = $allPermissions->original['data'];
 
-        return response()->json([
-            'data' => $roleDetail
-        ], 200);
+            DB::commit();
+            return response()->json([
+                'data' => $allPermissions
+            ], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -114,38 +119,6 @@ class UserAccessController extends Controller
     }
 
     /**
-     * @param Illuminate\Http\Request $request
-     * @return json
-     */
-    public function storePermission(Request $request)
-    {
-        DB::beginTransaction();
-        try {
-            if (Permission::where('slug', $request->slug)->exists()) {
-                throw new \Exception("Nama 'permission' sudah digunakan, gunakan nama yang lain !", 400);
-            }
-
-            $data = new Permission();
-            $data->name = $request->name;
-            $data->slug = $request->slug;
-            $data->save();
-
-            $allPermissions = $this->getAllPermissions();
-            $allPermissions = $allPermissions->original['data'];
-
-            DB::commit();
-            return response()->json([
-                'data' => $allPermissions
-            ], 200);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return response()->json([
-                'message' => $th->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
      * @param int $permissionId
      * @return json
      */
@@ -170,4 +143,62 @@ class UserAccessController extends Controller
         }
     }
 
+    /**
+     * @return json
+     */
+    public function getAllRoles()
+    {
+        $getPersmissions = Role::get();
+
+        return response()->json([
+            'data' => $getPersmissions
+        ], 200);
+    }
+
+    /**
+     * @param int role_id
+     * @return json
+     */
+    public function getRoleDetail($roleId)
+    {
+        $roleDetail = Role::where('id', $roleId)
+            ->with('permissions')
+            ->first();
+
+        return response()->json([
+            'data' => $roleDetail
+        ], 200);
+    }
+
+    /**
+     * @param Illuminate\Http\Request $request
+     * @return json
+     */
+    public function storeRole(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            if (Role::where('slug', $request->slug)->exists()) {
+                throw new \Exception("Nama role '" . $request->name . "' sudah digunakan, gunakan nama yang lain !", 400);
+            }
+
+            $data = new Role();
+            $data->name = $request->name;
+            $data->slug = $request->slug;
+            $data->save();
+
+            $allRoles = $this->getAllRoles();
+            $allRoles = $allRoles->original['data'];
+
+            DB::commit();
+            return response()->json([
+                'data' => $allRoles
+            ], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
 }
