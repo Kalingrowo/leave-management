@@ -91,7 +91,7 @@ trait HasRolesAndPermissions
     }
 
     /**
-     * @param mixed ...$permissions
+     * @param array $permissions
      * @return $this
      */
     public function revokePermissions(array $permissions)
@@ -132,6 +132,17 @@ trait HasRolesAndPermissions
         }
 
         $this->roles()->syncWithoutDetaching($roles);;
+        return $this;
+    }
+
+    /**
+     * @param array $roles
+     * @return $this
+     */
+    public function revokeRoles(array $roles)
+    {
+        $roles = $this->getAllRoles($roles);
+        $this->roles()->detach($roles);
         return $this;
     }
 
