@@ -51,7 +51,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('delete-role/{id}', [UserAccessController::class, 'deleteRole'])->name('delete_role');
     });
 
+    // master 
     Route::prefix('master')->name('master.')->group(function () {
-        Route::get('get-all-leave', [LeaveController::class, 'getAllLeave'])->name('get_all_leave');
+        // leave
+        Route::prefix('leave')->name('leave.')->group(function () {
+            Route::get('get-all-leave', [LeaveController::class, 'getAllLeave'])->name('get_all_leave');
+            Route::post('store-new-leave', [LeaveController::class, 'store'])->name('store');
+        });
     });
 });
