@@ -18,6 +18,7 @@ class CreateLeaveTable extends Migration
             $table->string('name');
             $table->integer('allocated_days')->nullable();
             $table->string('note')->nullable();
+            $table->enum('is_active', ['Y', 'N'])->default('Y');
             $table->timestamps();
         });
     }
