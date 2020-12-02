@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use App\Models\Master\Leave;
 use DB;
+use Exception;
 use Illuminate\Http\Request;
 
 class LeaveController extends Controller
@@ -32,12 +33,51 @@ class LeaveController extends Controller
             $newLeave->note = $request->note;
             $newLeave->save();
 
+            $getListLeave = $this->getAllLeave();
+            $getListLeave = $getListLeave->original['data'];
+
             DB::commit();
-            return response()->json([], 200);
+            return response()->json([
+                'data' => $getListLeave
+            ], 200);
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([
-                'data' => $th->getMessage()
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * @param Illuminate\Http\Request $request
+     * @return json
+     */
+    public function update(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $leave = Leave::where('id', $request->leave_id)->first();
+
+            if (!$leave) {
+                throw new Exception("Data tidak ditemukan !", 404);
+            }
+
+            $leave->name = $request->name;
+            $leave->allocated_days = $request->allocated_days;
+            $leave->note = $request->note;
+            $leave->save();
+
+            $getListLeave = $this->getAllLeave();
+            $getListLeave = $getListLeave->original['data'];
+
+            DB::commit();
+            return response()->json([
+                'data' => $getListLeave
+            ], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => $th->getMessage()
             ], 500);
         }
     }
