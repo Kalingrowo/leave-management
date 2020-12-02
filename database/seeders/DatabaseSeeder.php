@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Database\Seeders\Master\LeaveSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,7 +14,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        
+        $this->call(LeaveSeeder::class);
         $this->call(RoleSeeder::class);
         $this->call(PermissionSeeder::class);
         $this->call(UserSeeder::class);
