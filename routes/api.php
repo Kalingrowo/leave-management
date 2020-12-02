@@ -55,9 +55,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('master')->name('master.')->group(function () {
         // leave
         Route::prefix('leave')->name('leave.')->group(function () {
-            Route::get('get-all-leave', [LeaveController::class, 'getAllLeave'])->name('get_all_leave');
-            Route::post('store-new-leave', [LeaveController::class, 'store'])->name('store');
-            Route::post('update-leave', [LeaveController::class, 'update'])->name('update');
+            Route::get('get-all', [LeaveController::class, 'getAllLeave'])->name('get_all');
+            Route::post('store', [LeaveController::class, 'store'])->name('store');
+            Route::post('update', [LeaveController::class, 'update'])->name('update');
+            Route::post('toggle-status', [LeaveController::class, 'toggleStatus'])->name('toggle_status');
         });
     });
 });

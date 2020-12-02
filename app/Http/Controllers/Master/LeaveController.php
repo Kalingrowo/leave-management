@@ -81,4 +81,40 @@ class LeaveController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * @param Illuminate\Http\Request $request
+     * @return json
+     */
+    public function toggleStatus(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $leave = Leave::where('id', $request->leave_id)->first();
+
+            if (!$leave) {
+                throw new Exception("Data tidak ditemukan !", 404);
+            }
+
+            if ($leave->is_active == 'Y') {
+                $leave->is_active = 'N';
+            } else {
+                $leave->is_active = 'Y';
+            }
+            $leave->save();
+
+            $getListLeave = $this->getAllLeave();
+            $getListLeave = $getListLeave->original['data'];
+
+            DB::commit();
+            return response()->json([
+                'data' => $getListLeave
+            ], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
 }
