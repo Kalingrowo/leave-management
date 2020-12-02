@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Master\LeaveController;
 use App\Http\Controllers\UserAccess\UserAccessController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -48,5 +49,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('revoke-roles-from-user', [UserAccessController::class, 'revokeRolesFromUser'])->name('revoke_roles_from_user');
         Route::post('refresh-user-roles', [UserAccessController::class, 'refreshUserRoles'])->name('refresh_user_roles');
         Route::delete('delete-role/{id}', [UserAccessController::class, 'deleteRole'])->name('delete_role');
+    });
+
+    Route::prefix('master')->name('master.')->group(function () {
+        Route::get('get-all-leave', [LeaveController::class, 'getAllLeave'])->name('get_all_leave');
     });
 });
