@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Master\LeaveController;
 use App\Http\Controllers\UserAccess\UserAccessController;
+use App\Http\Controllers\UserManagementController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,11 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
     Route::post('logout', [LoginController::class, 'logout']);
+
+    // user management
+    Route::prefix('user-management')->name('user_management.')->group(function () {
+        Route::get('get-all-users', [UserManagementController::class, 'getAllUsers'])->name('get_all_users');
+    });
 
     // roles and permissions
     Route::prefix('user-access')->name('user_access.')->group(function () {
