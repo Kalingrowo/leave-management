@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('user-management')->name('user_management.')->group(function () {
         Route::get('get-all-users', [UserManagementController::class, 'getAllUsers'])->name('get_all_users');
         Route::post('store', [UserManagementController::class, 'store'])->name('store');
+        Route::delete('delete/{id}', [UserManagementController::class, 'delete'])->name('delete');
     });
 
     // roles and permissions
