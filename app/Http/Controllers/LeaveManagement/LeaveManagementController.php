@@ -28,8 +28,15 @@ class LeaveManagementController extends Controller
         try {
             $startDate = Carbon::parse($request->start_date);
             $endDate = Carbon::parse($request->end_date);
-            $userId = $request->user()->id;
             $leaveId = $request->leave_id;
+            $userId = $request->user()->id;
+            
+            if ($request->user_id) {
+                if (!$request->user()->hasRole('admin', 'general-affair')) {
+                    throw new Exception("Anda tidak memiliki akses untuk mencatatkan cuti atas nama user lain !", 1);
+                }
+                $userId = $request->user_id;
+            }
 
             $isExist = LeaveRequest::where('user_id', $userId)
                 ->where(function ($q) use ($startDate, $endDate) {
