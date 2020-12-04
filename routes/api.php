@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\LeaveManagement\LeaveManagementController;
 use App\Http\Controllers\Master\LeaveController;
 use App\Http\Controllers\UserAccess\UserAccessController;
 use App\Http\Controllers\UserManagementController;
@@ -68,5 +69,11 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('update', [LeaveController::class, 'update'])->name('update');
             Route::post('toggle-status', [LeaveController::class, 'toggleStatus'])->name('toggle_status');
         });
+    });
+
+    // leave managements
+    Route::prefix('leave-management')->name('leave_management.')->group(function () {
+        Route::get('get-all-leave-requests', [LeaveManagementController::class, 'getAllLeaveRequests'])->name('get_all_leave_requests');
+        Route::post('store-leave-request', [LeaveManagementController::class, 'storeLeaveRequest'])->name('store_leave_request');
     });
 });
