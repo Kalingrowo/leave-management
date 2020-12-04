@@ -60,7 +60,7 @@ class LeaveManagementController extends Controller
             $listAll = $this->getAllLeaveRequests();
             $listAll = $listAll->original['data'];
 
-            // DB::commit();
+            DB::commit();
             return response()->json([
                 'data' => $listAll
             ], 200);
