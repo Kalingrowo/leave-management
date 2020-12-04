@@ -12,17 +12,45 @@ use Illuminate\Http\Request;
 
 class LeaveManagementController extends Controller
 {
-    public function getAllLeaveRequests()
+    /**
+     * @param Illuminate\Http\Request $request
+     * @return json
+     */
+    public function getAllLeaveRequests(Request $request)
     {
         $listRequests = LeaveRequest::with('leave')
-            ->with('user')
-            ->get();
+            ->with('user');
+            
+        $userId = $request->user()->id;
+        if ($request->user()->hasRole('admin', 'general-affair')) {
+            if ($request->user_id) {
+                $userId = Crypt::decrypt($request->user_id);
+                $listRequests = $listRequests->where('user_id', $userId);
+            }
+        } else {
+            $listRequests = $listRequests->where('user_id', $userId);
+        }
+
+        if ($request->start_date && $request->end_date) {
+            $startDate = Carbon::parse($request->start_date);
+            $endDate = Carbon::parse($request->end_date);
+            $listRequests = $listRequests->where(function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('start_date', [$startDate, $endDate])
+                    ->orWhereBetween('end_date', [$startDate, $endDate]);
+            });
+        }
+
+        $listRequests = $listRequests->get();
 
         return response()->json([
             'data' => $listRequests
         ], 200);
     }
 
+    /**
+     * @param Illuminate\Http\Request $request
+     * @return json
+     */
     public function storeLeaveRequest(Request $request)
     {
         DB::beginTransaction();
@@ -57,7 +85,9 @@ class LeaveManagementController extends Controller
             $data->end_date = $endDate;
             $data->save();
 
-            $listAll = $this->getAllLeaveRequests();
+            $tempRequest = new Request();
+            $tempRequest->setUserResolver($request->getUserResolver());
+            $listAll = $this->getAllLeaveRequests($tempRequest);
             $listAll = $listAll->original['data'];
 
             DB::commit();
