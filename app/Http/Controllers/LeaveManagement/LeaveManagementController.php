@@ -5,6 +5,7 @@ namespace App\Http\Controllers\LeaveManagement;
 use App\Http\Controllers\Controller;
 use App\Models\LeaveManagement\LeaveRequest;
 use Carbon\Carbon;
+use Crypt;
 use DB;
 use Exception;
 use Illuminate\Http\Request;
@@ -35,7 +36,7 @@ class LeaveManagementController extends Controller
                 if (!$request->user()->hasRole('admin', 'general-affair')) {
                     throw new Exception("Anda tidak memiliki akses untuk mencatatkan cuti atas nama user lain !", 1);
                 }
-                $userId = $request->user_id;
+                $userId = Crypt::decrypt($request->user_id);
             }
 
             $isExist = LeaveRequest::where('user_id', $userId)
@@ -59,7 +60,7 @@ class LeaveManagementController extends Controller
             $listAll = $this->getAllLeaveRequests();
             $listAll = $listAll->original['data'];
 
-            DB::commit();
+            // DB::commit();
             return response()->json([
                 'data' => $listAll
             ], 200);
