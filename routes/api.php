@@ -6,6 +6,7 @@ use App\Http\Controllers\Master\LeaveController;
 use App\Http\Controllers\UserAccess\UserAccessController;
 use App\Http\Controllers\UserManagementController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
